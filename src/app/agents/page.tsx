@@ -17,26 +17,27 @@ export default function AgentsListPage() {
   const { notification, showError, hideNotification } = useNotification()
 
   useEffect(() => {
-    async function fetchAgents() {
-      try {
-        setLoading(true)
-        const response = await getAgents()
-
-        if (response.error) {
-          throw new Error(response.error.message)
-        }
-
-        setAgents(response.data || [])
-      } catch (error) {
-        console.error('Error fetching agents:', error)
-        showError(error instanceof Error ? error.message : '获取代理列表失败')
-      } finally {
-        setLoading(false)
-      }
-    }
-
     fetchAgents()
   }, [showError])
+
+  // 获取代理列表
+  async function fetchAgents() {
+    try {
+      setLoading(true)
+      const response = await getAgents()
+
+      if (response.error) {
+        throw new Error(response.error.message)
+      }
+
+      setAgents(response.data || [])
+    } catch (error) {
+      console.error('Error fetching agents:', error)
+      showError(error instanceof Error ? error.message : '获取代理列表失败')
+    } finally {
+      setLoading(false)
+    }
+  }
 
   // 筛选和搜索逻辑
   const filteredAgents = agents.filter((agent) => {
@@ -125,7 +126,7 @@ export default function AgentsListPage() {
 
       <div className="pt-32 pb-16 px-6 max-w-[1200px] mx-auto">
         <div className="flex justify-between items-center mb-8">
-          <h1 className="text-2xl font-bold text-gray-800">探索 AI 代理</h1>
+          <h1 className="text-2xl font-bold text-gray-800">探索 AI Agent </h1>
           <Link
             href="/agents/create"
             className="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90 text-sm font-medium flex items-center gap-1"
@@ -142,7 +143,7 @@ export default function AgentsListPage() {
                 clipRule="evenodd"
               />
             </svg>
-            部署新代理
+            部署Agent
           </Link>
         </div>
 
