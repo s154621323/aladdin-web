@@ -5,7 +5,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import Header from '@/components/layout/Header'
 import Footer from '@/components/layout/Footer'
-import { Agent, getAgents } from '@/services/agentService'
+import { Agent, getAgents, deleteAgent } from '@/services/agentService'
 import useNotification from '@/hooks/useNotification'
 import Notification from '@/components/ui/Notification'
 
@@ -14,11 +14,16 @@ export default function AgentsListPage() {
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
   const [filter, setFilter] = useState('all')
-  const { notification, showError, hideNotification } = useNotification()
+  const [deleteLoading, setDeleteLoading] = useState<string | null>(null)
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState<string | null>(
+    null
+  )
+  const { notification, showSuccess, showError, hideNotification } =
+    useNotification()
 
   useEffect(() => {
     fetchAgents()
-  }, [showError])
+  }, [])
 
   // 获取代理列表
   async function fetchAgents() {
@@ -39,6 +44,24 @@ export default function AgentsListPage() {
     }
   }
 
+  // 删除代理
+  async function handleDeleteAgent(id: string) {
+    try {
+      setDeleteLoading(id)
+      await deleteAgent(id)
+      showSuccess('代理删除成功')
+
+      // 更新代理列表
+      setAgents(agents.filter((agent) => agent.id !== id))
+      setShowDeleteConfirm(null)
+    } catch (error) {
+      console.error('Error deleting agent:', error)
+      showError(error instanceof Error ? error.message : '删除代理失败')
+    } finally {
+      setDeleteLoading(null)
+    }
+  }
+
   // 筛选和搜索逻辑
   const filteredAgents = agents.filter((agent) => {
     const matchesSearch =
@@ -52,6 +75,68 @@ export default function AgentsListPage() {
 
     return matchesSearch
   })
+
+  // 渲染删除确认对话框
+  const renderDeleteConfirmDialog = () => {
+    if (!showDeleteConfirm) return null
+
+    const agent = agents.find((a) => a.id === showDeleteConfirm)
+    if (!agent) return null
+
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="bg-white rounded-lg p-6 max-w-md w-full">
+          <h3 className="text-xl font-bold text-gray-800 mb-4">确认删除</h3>
+          <p className="text-gray-600 mb-6">
+            您确定要删除代理 <span className="font-semibold">{agent.name}</span>{' '}
+            吗？此操作无法撤销。
+          </p>
+          <div className="flex justify-end gap-3">
+            <button
+              onClick={() => setShowDeleteConfirm(null)}
+              className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300"
+              disabled={deleteLoading === showDeleteConfirm}
+            >
+              取消
+            </button>
+            <button
+              onClick={() => handleDeleteAgent(showDeleteConfirm)}
+              className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
+              disabled={deleteLoading === showDeleteConfirm}
+            >
+              {deleteLoading === showDeleteConfirm ? (
+                <span className="flex items-center">
+                  <svg
+                    className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    ></circle>
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                    ></path>
+                  </svg>
+                  删除中...
+                </span>
+              ) : (
+                '确认删除'
+              )}
+            </button>
+          </div>
+        </div>
+      </div>
+    )
+  }
 
   // 渲染每个代理卡片
   const renderAgentCard = (agent: Agent) => {
@@ -101,6 +186,12 @@ export default function AgentsListPage() {
             >
               详情
             </Link>
+            <button
+              onClick={() => agent.id && setShowDeleteConfirm(agent.id)}
+              className="px-3 py-1 text-xs bg-red-600 text-white rounded-md hover:bg-red-700"
+            >
+              删除
+            </button>
             <Link
               href={`/agents/${agent.id}/deploy`}
               className="px-3 py-1 text-xs bg-primary text-white rounded-md hover:bg-primary/90"
@@ -123,6 +214,8 @@ export default function AgentsListPage() {
         visible={notification.visible}
         onClose={hideNotification}
       />
+
+      {renderDeleteConfirmDialog()}
 
       <div className="pt-32 pb-16 px-6 max-w-[1200px] mx-auto">
         <div className="flex justify-between items-center mb-8">
@@ -239,7 +332,7 @@ export default function AgentsListPage() {
                 : '目前没有可用的代理，请创建一个新的代理'}
             </p>
             <Link
-              href="/agents"
+              href="/agents/create"
               className="mt-6 inline-block px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90 text-sm font-medium"
             >
               部署新代理
@@ -248,14 +341,6 @@ export default function AgentsListPage() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredAgents.map(renderAgentCard)}
-          </div>
-        )}
-
-        {!loading && filteredAgents.length > 0 && (
-          <div className="flex justify-center mt-8">
-            <div className="bg-white px-4 py-2 rounded-md shadow-sm text-sm text-gray-500">
-              显示 {filteredAgents.length} 个代理中的 {filteredAgents.length} 个
-            </div>
           </div>
         )}
       </div>
