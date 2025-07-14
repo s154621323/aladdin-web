@@ -114,7 +114,7 @@ export async function apiRequest<T = any>(
 
     // 根据状态码处理响应
     if (!response.ok) {
-      return {
+      const errorResponse = {
         error: {
           message: data.message || '请求失败',
           code: data.code,
@@ -122,6 +122,9 @@ export async function apiRequest<T = any>(
         },
         status: response.status,
       }
+
+      // 抛出错误而不是返回错误对象
+      throw new Error(data.message || `请求失败: ${response.status}`)
     }
 
     return {
@@ -129,7 +132,8 @@ export async function apiRequest<T = any>(
       status: response.status,
     }
   } catch (error) {
-    return handleApiError(error, endpoint)
+    // 重新抛出错误，确保调用者可以捕获
+    throw error
   }
 }
 

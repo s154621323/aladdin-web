@@ -10,25 +10,25 @@ export enum JobStatus {
 
 // 任务优先级枚举
 export enum JobPriority {
-  LOW = 'LOW',
-  MEDIUM = 'MEDIUM',
-  HIGH = 'HIGH',
-  URGENT = 'URGENT',
+  LOW = 'Low Priority',
+  MEDIUM = 'Medium Priority',
+  HIGH = 'High Priority',
+  URGENT = 'Urgent',
 }
 
 // 技能要求级别枚举
 export enum SkillLevel {
-  BEGINNER = 'BEGINNER',
-  INTERMEDIATE = 'INTERMEDIATE',
-  ADVANCED = 'ADVANCED',
-  EXPERT = 'EXPERT',
+  BEGINNER = 'Beginner',
+  INTERMEDIATE = 'Intermediate',
+  ADVANCED = 'Advanced',
+  EXPERT = 'Expert',
 }
 
 // 支付类型枚举
 export enum PaymentType {
-  FIXED = 'FIXED',
-  HOURLY = 'HOURLY',
-  MILESTONE = 'MILESTONE',
+  FIXED = 'Fixed',
+  HOURLY = 'Hourly',
+  MILESTONE = 'Milestone',
 }
 
 // Job类型定义
@@ -136,8 +136,20 @@ const jobService = {
     try {
       const response = await apiClient.post('/jobs', jobData)
       return response.data
-    } catch (error) {
+    } catch (error: any) {
       console.error('创建任务失败:', error)
+
+      // 提取详细错误信息
+      if (error.response && error.response.data) {
+        const errorData = error.response.data
+        if (Array.isArray(errorData.message)) {
+          throw new Error(errorData.message.join(', '))
+        } else if (typeof errorData.message === 'string') {
+          throw new Error(errorData.message)
+        }
+      }
+
+      // 如果没有详细错误信息，则抛出原始错误
       throw error
     }
   },
