@@ -74,7 +74,16 @@ export async function apiRequest<T = any>(
 ): Promise<ApiResponse<T>> {
   try {
     const { params, token, ...fetchOptions } = options
-    const url = `${endpoint}${createQueryString(params)}`
+
+    // 确保endpoint以/开头但不以/api开头
+    const normalizedEndpoint = endpoint.startsWith('/')
+      ? endpoint
+      : `/${endpoint}`
+
+    // 构建完整URL
+    const url = `${API_BASE_URL}${normalizedEndpoint}${createQueryString(
+      params
+    )}`
 
     const headers = new Headers(fetchOptions.headers)
 

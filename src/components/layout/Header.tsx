@@ -24,6 +24,12 @@ const Header = () => {
           >
             Agents
           </Link>
+          <Link
+            href="/jobs"
+            className="font-semibold text-base cursor-pointer text-black"
+          >
+            Jobs
+          </Link>
           <div className="font-semibold text-base cursor-pointer text-black">
             Social
           </div>

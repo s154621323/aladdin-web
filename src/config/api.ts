@@ -8,10 +8,10 @@ export const API_ENDPOINTS = {
   JOBS: '/jobs',
 }
 
-// 完整API URL
+// API端点路径（不包含基础URL）
 export const API_URLS = {
-  AGENTS: `${API_BASE_URL}${API_ENDPOINTS.AGENTS}`,
-  AGENT_BY_ID: (id: string) => `${API_BASE_URL}${API_ENDPOINTS.AGENTS}/${id}`,
-  JOBS: `${API_BASE_URL}${API_ENDPOINTS.JOBS}`,
-  JOB_BY_ID: (id: string) => `${API_BASE_URL}${API_ENDPOINTS.JOBS}/${id}`,
+  AGENTS: API_ENDPOINTS.AGENTS,
+  AGENT_BY_ID: (id: string) => `${API_ENDPOINTS.AGENTS}/${id}`,
+  JOBS: API_ENDPOINTS.JOBS,
+  JOB_BY_ID: (id: string) => `${API_ENDPOINTS.JOBS}/${id}`,
 }
