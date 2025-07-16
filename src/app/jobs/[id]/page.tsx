@@ -11,6 +11,7 @@ import jobService, {
   SkillLevel,
   PaymentType,
 } from '@/services/jobService'
+import { jobMatchingService } from '@/services/jobMatchingService'
 import useNotification from '@/hooks/useNotification'
 import Notification from '@/components/ui/Notification'
 
@@ -19,7 +20,9 @@ export default function JobDetailPage({ params }: { params: { id: string } }) {
 
   const [job, setJob] = useState<Job | null>(null)
   const [loading, setLoading] = useState(true)
-  const { notification, showError, hideNotification } = useNotification()
+  const [matchingInProgress, setMatchingInProgress] = useState(false)
+  const { notification, showError, showSuccess, hideNotification } =
+    useNotification()
 
   useEffect(() => {
     const fetchJobDetail = async () => {
@@ -59,6 +62,30 @@ export default function JobDetailPage({ params }: { params: { id: string } }) {
     } catch (err) {
       showError('更新任务状态失败')
       console.error('更新任务状态出错:', err)
+    }
+  }
+
+  // 触发作业匹配
+  const handleTriggerMatching = async () => {
+    try {
+      setMatchingInProgress(true)
+      await jobMatchingService.triggerJobMatching()
+      showSuccess('作业匹配已触发，正在为待处理的作业匹配合适的代理')
+      // 短暂延迟后刷新作业详情，以便看到匹配结果
+      setTimeout(async () => {
+        try {
+          const updatedJob = await jobService.getJobById(id)
+          setJob(updatedJob)
+          setMatchingInProgress(false)
+        } catch (err) {
+          console.error('刷新任务详情出错:', err)
+          setMatchingInProgress(false)
+        }
+      }, 1000)
+    } catch (err) {
+      showError('触发作业匹配失败')
+      setMatchingInProgress(false)
+      console.error('触发作业匹配出错:', err)
     }
   }
 
@@ -110,6 +137,168 @@ export default function JobDetailPage({ params }: { params: { id: string } }) {
       case PaymentType.MILESTONE:
         return '按里程碑付款'
     }
+  }
+
+  // 渲染匹配状态
+  const renderMatchingStatus = () => {
+    if (!job) return null
+
+    // 如果已经分配了代理
+    if (job.agentId) {
+      return (
+        <div className="bg-green-50 border border-green-100 rounded-md p-4 mb-6">
+          <div className="flex items-start">
+            <div className="flex-shrink-0 mt-0.5">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-5 w-5 text-green-500"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                  clipRule="evenodd"
+                />
+              </svg>
+            </div>
+            <div className="ml-3">
+              <h3 className="text-sm font-medium text-green-800">已匹配代理</h3>
+              <div className="mt-1 text-sm text-green-700">
+                <p>
+                  该任务已成功匹配到代理{' '}
+                  <Link
+                    href={`/agents/${job.agentId}`}
+                    className="font-medium underline"
+                  >
+                    {job.agent?.name || job.agentId}
+                  </Link>
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )
+    }
+
+    // 如果开启了自动分配但尚未匹配到代理
+    if (job.autoAssign) {
+      return (
+        <div className="bg-yellow-50 border border-yellow-100 rounded-md p-4 mb-6">
+          <div className="flex items-start">
+            <div className="flex-shrink-0 mt-0.5">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-5 w-5 text-yellow-500"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"
+                  clipRule="evenodd"
+                />
+              </svg>
+            </div>
+            <div className="ml-3">
+              <h3 className="text-sm font-medium text-yellow-800">
+                等待匹配代理
+              </h3>
+              <div className="mt-1 text-sm text-yellow-700">
+                <p>
+                  该任务已开启自动分配，系统将自动为其匹配合适的代理。您也可以手动触发匹配流程。
+                </p>
+              </div>
+              <div className="mt-3">
+                <button
+                  onClick={handleTriggerMatching}
+                  disabled={matchingInProgress}
+                  className={`px-3 py-1.5 bg-yellow-600 text-white rounded-md text-xs font-medium flex items-center ${
+                    matchingInProgress
+                      ? 'opacity-70 cursor-not-allowed'
+                      : 'hover:bg-yellow-700'
+                  }`}
+                >
+                  {matchingInProgress ? (
+                    <>
+                      <svg
+                        className="animate-spin -ml-0.5 mr-2 h-3 w-3 text-white"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                      >
+                        <circle
+                          className="opacity-25"
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          strokeWidth="4"
+                        ></circle>
+                        <path
+                          className="opacity-75"
+                          fill="currentColor"
+                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                        ></path>
+                      </svg>
+                      匹配中...
+                    </>
+                  ) : (
+                    '立即匹配代理'
+                  )}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )
+    }
+
+    // 如果未开启自动分配
+    return (
+      <div className="bg-blue-50 border border-blue-100 rounded-md p-4 mb-6">
+        <div className="flex items-start">
+          <div className="flex-shrink-0 mt-0.5">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-5 w-5 text-blue-500"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path
+                fillRule="evenodd"
+                d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                clipRule="evenodd"
+              />
+            </svg>
+          </div>
+          <div className="ml-3">
+            <h3 className="text-sm font-medium text-blue-800">
+              未启用自动匹配
+            </h3>
+            <div className="mt-1 text-sm text-blue-700">
+              <p>
+                该任务未启用自动分配功能。您可以手动为任务分配代理，或者编辑任务开启自动分配功能。
+              </p>
+            </div>
+            <div className="mt-3 flex space-x-3">
+              <Link
+                href={`/jobs/edit/${job.id}`}
+                className="px-3 py-1.5 bg-blue-600 text-white rounded-md text-xs font-medium hover:bg-blue-700"
+              >
+                编辑任务
+              </Link>
+              <Link
+                href="/agents"
+                className="px-3 py-1.5 bg-white border border-blue-600 text-blue-600 rounded-md text-xs font-medium hover:bg-blue-50"
+              >
+                浏览代理
+              </Link>
+            </div>
+          </div>
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -198,6 +387,9 @@ export default function JobDetailPage({ params }: { params: { id: string } }) {
                 </button>
               </div>
             </div>
+
+            {/* 匹配状态信息 */}
+            {renderMatchingStatus()}
 
             {/* 任务详情卡片 */}
             <div className="bg-white shadow-sm rounded-xl overflow-hidden">

@@ -11,6 +11,7 @@ import jobService, {
   Job,
   JobFilters,
 } from '@/services/jobService'
+import { jobMatchingService } from '@/services/jobMatchingService'
 import useNotification from '@/hooks/useNotification'
 import Notification from '@/components/ui/Notification'
 
@@ -21,7 +22,9 @@ export default function JobsPage() {
   const [totalPages, setTotalPages] = useState(1)
   const [filters, setFilters] = useState<JobFilters>({})
   const [searchTerm, setSearchTerm] = useState('')
-  const { notification, showError, hideNotification } = useNotification()
+  const [matchingInProgress, setMatchingInProgress] = useState(false)
+  const { notification, showError, showSuccess, hideNotification } =
+    useNotification()
 
   const pageSize = 10
 
@@ -73,6 +76,24 @@ export default function JobsPage() {
       ...filters,
       ...filter,
     })
+  }
+
+  // 触发作业匹配
+  const handleTriggerMatching = async () => {
+    try {
+      setMatchingInProgress(true)
+      await jobMatchingService.triggerJobMatching()
+      showSuccess('作业匹配已触发，正在为待处理的作业匹配合适的代理')
+      // 短暂延迟后刷新作业列表，以便看到匹配结果
+      setTimeout(() => {
+        fetchJobs()
+        setMatchingInProgress(false)
+      }, 1000)
+    } catch (err) {
+      showError('触发作业匹配失败')
+      setMatchingInProgress(false)
+      console.error('触发作业匹配出错:', err)
+    }
   }
 
   const renderStatusBadge = (status: JobStatus) => {
@@ -146,27 +167,80 @@ export default function JobsPage() {
         onClose={hideNotification}
       />
 
-      <div className="pt-32 pb-16 px-6 max-w-[1200px] mx-auto">
+      <div className="pt-32 pb-16 px-6 max-w-[1400px] mx-auto">
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-2xl font-bold text-gray-800">任务管理</h1>
-          <Link
-            href="/jobs/create"
-            className="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90 text-sm font-medium flex items-center gap-1"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-4 w-4"
-              viewBox="0 0 20 20"
-              fill="currentColor"
+          <div className="flex gap-3">
+            <button
+              onClick={handleTriggerMatching}
+              disabled={matchingInProgress}
+              className={`px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 text-sm font-medium flex items-center gap-1 ${
+                matchingInProgress ? 'opacity-70 cursor-not-allowed' : ''
+              }`}
             >
-              <path
-                fillRule="evenodd"
-                d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"
-                clipRule="evenodd"
-              />
-            </svg>
-            创建任务
-          </Link>
+              {matchingInProgress ? (
+                <>
+                  <svg
+                    className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    ></circle>
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                    ></path>
+                  </svg>
+                  匹配中...
+                </>
+              ) : (
+                <>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-4 w-4"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M8 7h12m0 0l-4-4m4 4l-4 4m-8 6H4m0 0l4 4m-4-4l4-4"
+                    />
+                  </svg>
+                  匹配作业
+                </>
+              )}
+            </button>
+            <Link
+              href="/jobs/create"
+              className="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90 text-sm font-medium flex items-center gap-1"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-4 w-4"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"
+                  clipRule="evenodd"
+                />
+              </svg>
+              创建任务
+            </Link>
+          </div>
         </div>
 
         <div className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl p-6 shadow-sm border border-white/50 backdrop-blur-sm mb-8">

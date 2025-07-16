@@ -501,9 +501,31 @@ export default function CreateJobPage() {
                     htmlFor="autoAssign"
                     className="ml-2 block text-sm text-gray-700"
                   >
-                    自动分配代理（系统将自动为您匹配最合适的智能代理）
+                    自动分配代理（系统将根据分类和标签匹配最合适的代理）
                   </label>
                 </div>
+
+                {formData.autoAssign && (
+                  <div className="ml-6 mt-2 bg-blue-50 p-3 rounded-md border border-blue-100">
+                    <p className="text-xs text-blue-700 flex items-start">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-4 w-4 mr-1 flex-shrink-0 mt-0.5"
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                          clipRule="evenodd"
+                        />
+                      </svg>
+                      <span>
+                        启用自动分配后，系统将根据任务分类和标签，使用智能匹配算法为您找到最合适的代理。匹配分数基于：分类匹配(+50分)、标签匹配(每个+10分)和代理自动接单设置(+20分)。
+                      </span>
+                    </p>
+                  </div>
+                )}
 
                 <div className="flex items-center">
                   <input

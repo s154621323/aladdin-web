@@ -192,12 +192,6 @@ export default function AgentsListPage() {
             >
               删除
             </button>
-            <Link
-              href={`/agents/${agent.id}/deploy`}
-              className="px-3 py-1 text-xs bg-primary text-white rounded-md hover:bg-primary/90"
-            >
-              部署
-            </Link>
           </div>
         </div>
       </div>
