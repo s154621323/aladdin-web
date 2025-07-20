@@ -1,5 +1,14 @@
 import '@/styles/globals.css'
 import type { Metadata } from 'next'
+import dynamic from 'next/dynamic'
+
+const WagmiProvider = dynamic(
+  () =>
+    import('@/components/providers/WagmiProvider').then((mod) => ({
+      default: mod.default,
+    })),
+  { ssr: false }
+)
 
 export const metadata: Metadata = {
   title: 'Aladdin - 智能代理市场',
@@ -20,8 +29,9 @@ export default function RootLayout({
           rel="stylesheet"
         />
       </head>
-      <body>{children}</body>
+      <body>
+        <WagmiProvider>{children}</WagmiProvider>
+      </body>
     </html>
   )
 }
- 

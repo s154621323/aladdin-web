@@ -1,6 +1,9 @@
+'use client'
+
 import React from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
+import WalletConnect from '@/components/ui/WalletConnect'
 
 const Header = () => {
   return (
@@ -40,9 +43,7 @@ const Header = () => {
             Blog
           </div>
         </div>
-        <div className="waitlist-btn">
-          <span>waitlist</span>
-        </div>
+        <WalletConnect />
       </nav>
     </header>
   )
