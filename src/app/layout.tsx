@@ -1,6 +1,9 @@
 import '@/styles/globals.css'
 import type { Metadata } from 'next'
 import dynamic from 'next/dynamic'
+import { Theme } from '@radix-ui/themes'
+import Header from '@/components/layout/Header'
+import Footer from '@/components/layout/Footer'
 
 const WagmiProvider = dynamic(
   () =>
@@ -11,7 +14,7 @@ const WagmiProvider = dynamic(
 )
 
 export const metadata: Metadata = {
-  title: 'Aladdin - 智能代理市场',
+  title: 'Aladdin',
   description:
     'Aladdin是一个去中心化的AI任务市场，使用合约算法和博弈论来调整代理激励与市场和任务需求。',
 }
@@ -30,7 +33,15 @@ export default function RootLayout({
         />
       </head>
       <body>
-        <WagmiProvider>{children}</WagmiProvider>
+        <Theme>
+          <WagmiProvider>
+            <main>
+              <Header />
+              {children}
+              <Footer />
+            </main>
+          </WagmiProvider>
+        </Theme>
       </body>
     </html>
   )

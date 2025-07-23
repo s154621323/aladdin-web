@@ -1,3 +1,5 @@
+@import '@radix-ui/themes/styles.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -55,11 +57,11 @@
   }
 
   .grid-card {
-    @apply bg-white/60 backdrop-blur-lg rounded-large p-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg;
+    @apply bg-white/60 backdrop-blur-lg rounded-large p-6 transition-all duration-300;
   }
 
   .social-icon {
-    @apply w-11 h-11 rounded-full bg-white/10 cursor-pointer transition-all duration-300 hover:bg-white/20;
+    @apply w-11 h-11 rounded-full bg-white/10 cursor-pointer transition-all duration-300;
   }
 }
 

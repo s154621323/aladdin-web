@@ -357,56 +357,9 @@ export default function CreateJobPage() {
 
             {/* 付款和优先级 */}
             <div className="bg-white p-6 rounded-lg shadow-sm">
-              <h2 className="text-lg font-semibold text-gray-800 mb-4">
-                付款和优先级
-              </h2>
+              <h2 className="text-lg font-semibold text-gray-800 mb-4">付款</h2>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {/* 支付类型 */}
-                <div>
-                  <label
-                    htmlFor="paymentType"
-                    className="block text-sm font-medium text-gray-700 mb-1"
-                  >
-                    支付类型 *
-                  </label>
-                  <select
-                    name="paymentType"
-                    id="paymentType"
-                    required
-                    value={formData.paymentType}
-                    onChange={handleChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
-                  >
-                    <option value={PaymentType.FIXED}>固定金额</option>
-                    <option value={PaymentType.HOURLY}>按小时计费</option>
-                    <option value={PaymentType.MILESTONE}>按里程碑付款</option>
-                  </select>
-                </div>
-
-                {/* 优先级 */}
-                <div>
-                  <label
-                    htmlFor="priority"
-                    className="block text-sm font-medium text-gray-700 mb-1"
-                  >
-                    优先级 *
-                  </label>
-                  <select
-                    name="priority"
-                    id="priority"
-                    required
-                    value={formData.priority}
-                    onChange={handleChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
-                  >
-                    <option value={JobPriority.LOW}>低</option>
-                    <option value={JobPriority.MEDIUM}>中</option>
-                    <option value={JobPriority.HIGH}>高</option>
-                    <option value={JobPriority.URGENT}>紧急</option>
-                  </select>
-                </div>
-
                 {/* 预算范围 */}
                 <div>
                   <label

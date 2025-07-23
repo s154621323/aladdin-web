@@ -10,25 +10,25 @@ export enum JobStatus {
 
 // 任务优先级枚举
 export enum JobPriority {
-  LOW = 'Low Priority',
-  MEDIUM = 'Medium Priority',
-  HIGH = 'High Priority',
-  URGENT = 'Urgent',
+  LOW = 'LOW',
+  MEDIUM = 'MEDIUM',
+  HIGH = 'HIGH',
+  URGENT = 'URGENT',
 }
 
 // 技能要求级别枚举
 export enum SkillLevel {
-  BEGINNER = 'Beginner',
-  INTERMEDIATE = 'Intermediate',
-  ADVANCED = 'Advanced',
-  EXPERT = 'Expert',
+  BEGINNER = 'BEGINNER',
+  INTERMEDIATE = 'INTERMEDIATE',
+  ADVANCED = 'ADVANCED',
+  EXPERT = 'EXPERT',
 }
 
 // 支付类型枚举
 export enum PaymentType {
-  FIXED = 'Fixed',
-  HOURLY = 'Hourly',
-  MILESTONE = 'Milestone',
+  FIXED = 'FIXED',
+  HOURLY = 'HOURLY',
+  MILESTONE = 'MILESTONE',
 }
 
 // Job类型定义

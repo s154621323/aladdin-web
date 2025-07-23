@@ -3,8 +3,6 @@
 import React, { useEffect, useState } from 'react'
 import { useRouter, useParams } from 'next/navigation'
 import Link from 'next/link'
-import Header from '@/components/layout/Header'
-import Footer from '@/components/layout/Footer'
 import { Agent, getAgent, deleteAgent } from '@/services/agentService'
 import useNotification from '@/hooks/useNotification'
 import Notification from '@/components/ui/Notification'
@@ -126,59 +124,49 @@ export default function AgentDetailPage() {
 
   if (loading) {
     return (
-      <main className="min-h-screen bg-[#f0f4f9]">
-        <Header />
-        <div className="pt-32 pb-16 px-6 max-w-[1000px] mx-auto">
-          <div className="flex justify-center items-center py-20">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
-          </div>
+      <div className="pt-32 pb-16 px-6 max-w-[1000px] mx-auto">
+        <div className="flex justify-center items-center py-20">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
         </div>
-        <Footer />
-      </main>
+      </div>
     )
   }
 
   if (!agent) {
     return (
-      <main className="min-h-screen bg-[#f0f4f9]">
-        <Header />
-        <div className="pt-32 pb-16 px-6 max-w-[1000px] mx-auto">
-          <div className="bg-white rounded-xl p-12 shadow-sm text-center">
-            <div className="text-gray-400 mb-3">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-12 w-12 mx-auto"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                />
-              </svg>
-            </div>
-            <h3 className="text-xl font-bold text-gray-700 mb-1">代理不存在</h3>
-            <p className="text-gray-500 mb-6">找不到该代理或已被删除</p>
-            <Link
-              href="/agents"
-              className="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90 text-sm font-medium"
+      <div className="pt-32 pb-16 px-6 max-w-[1000px] mx-auto">
+        <div className="bg-white rounded-xl p-12 shadow-sm text-center">
+          <div className="text-gray-400 mb-3">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-12 w-12 mx-auto"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
             >
-              返回代理列表
-            </Link>
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
+            </svg>
           </div>
+          <h3 className="text-xl font-bold text-gray-700 mb-1">代理不存在</h3>
+          <p className="text-gray-500 mb-6">找不到该代理或已被删除</p>
+          <Link
+            href="/agents"
+            className="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90 text-sm font-medium"
+          >
+            返回代理列表
+          </Link>
         </div>
-        <Footer />
-      </main>
+      </div>
     )
   }
 
   return (
-    <main className="min-h-screen bg-[#f0f4f9]">
-      <Header />
-
+    <div>
       <Notification
         type={notification.type}
         message={notification.message}
@@ -382,8 +370,6 @@ export default function AgentDetailPage() {
           </div>
         </div>
       </div>
-
-      <Footer />
-    </main>
+    </div>
   )
 }
