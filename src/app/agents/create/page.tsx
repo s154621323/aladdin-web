@@ -1,8 +1,8 @@
 'use client'
 
 import React from 'react'
-import Header from '@/components/layout/Header'
-import Footer from '@/components/layout/Footer'
+import Header from '@/ui/layout/Header'
+import Footer from '@/ui/layout/Footer'
 import Link from 'next/link'
 import Image from 'next/image'
 import { Agent, createAgent } from '@/services/agentService'

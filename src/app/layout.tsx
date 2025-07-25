@@ -1,17 +1,9 @@
 import '@/styles/globals.css'
 import type { Metadata } from 'next'
-import dynamic from 'next/dynamic'
 import { Theme } from '@radix-ui/themes'
-import Header from '@/components/layout/Header'
-import Footer from '@/components/layout/Footer'
-
-const WagmiProvider = dynamic(
-  () =>
-    import('@/components/providers/WagmiProvider').then((mod) => ({
-      default: mod.default,
-    })),
-  { ssr: false }
-)
+import Header from '@/ui/layout/Header'
+import Footer from '@/ui/layout/Footer'
+import { inter, openSans, roboto } from '@/ui/fonts'
 
 export const metadata: Metadata = {
   title: 'Aladdin',
@@ -25,22 +17,14 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="zh-CN">
-      <head>
-        <link
-          href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&family=Inter:wght@400;600&family=Roboto:wght@400;600&display=swap"
-          rel="stylesheet"
-        />
-      </head>
-      <body>
+    <html lang="en">
+      <body
+        className={`${inter.className} ${openSans.className} ${roboto.className}`}
+      >
         <Theme>
-          <WagmiProvider>
-            <main>
-              <Header />
-              {children}
-              <Footer />
-            </main>
-          </WagmiProvider>
+          <Header />
+          {children}
+          <Footer />
         </Theme>
       </body>
     </html>

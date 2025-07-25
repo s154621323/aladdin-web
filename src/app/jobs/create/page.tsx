@@ -2,8 +2,8 @@
 
 import React, { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import Header from '@/components/layout/Header'
-import Footer from '@/components/layout/Footer'
+import Header from '@/ui/layout/Header'
+import Footer from '@/ui/layout/Footer'
 import Link from 'next/link'
 import jobService, {
   Job,

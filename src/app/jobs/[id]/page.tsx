@@ -2,8 +2,8 @@
 
 import React, { useState, useEffect } from 'react'
 import Link from 'next/link'
-import Header from '@/components/layout/Header'
-import Footer from '@/components/layout/Footer'
+import Header from '@/ui/layout/Header'
+import Footer from '@/ui/layout/Footer'
 import jobService, {
   Job,
   JobStatus,
